@@ -9,17 +9,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.qmuiteam.qmui.widget.dialog.QMUIDialog;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogAction;
 import com.qmuiteam.qmui.widget.dialog.QMUIDialogBuilder;
 
+import scut.carson_ho.searchview.ICallBack;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     public static String TAG="TAG";
     Button mButton1;
     Button mButton2;
     Button mButton3;
+    SearchView mSearch;
 
 
     @Override
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mButton1=findViewById(R.id.btn);
         mButton2=findViewById(R.id.qm_btn);
         mButton3=findViewById(R.id.qm_btn_1);
+        mSearch=(SearchView) findViewById(R.id.search_view);
 
         mButton1.setOnClickListener(this);
         mButton2.setOnClickListener(this);
@@ -95,4 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
+
+
+
 }

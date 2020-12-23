@@ -30,5 +30,22 @@
         android:layout_height="wrap_content"
         android:id="@+id/qm_btn_1"
         android:text="QMUI其他对话框"/>
+<!--    <scut.carson_ho.searchview.EditText_Clear-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="输入"/>-->
+    <scut.carson_ho.searchview.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:textSizeSearch="5dp"
+        app:textColorSearch="#3F51B5"
+        app:textHintSearch="输入查询关键字"
+        app:searchBlockHeight="150"
+        app:searchBlockColor="#ffffff"
+        app:searchIcon="@drawable/green"
+        app:queryHint="测试"
+        />
+
 
 </LinearLayout>

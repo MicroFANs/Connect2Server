@@ -1,3 +1,4 @@
 rootProject.name='Connect2Server'
 include ':app'
 include ':qmuitest'
+include ':dpf_client'

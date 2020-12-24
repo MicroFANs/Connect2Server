@@ -24,8 +24,9 @@
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/navigation_my"
-        android:name="com.example.dpf_client.ui.mytest.MyFragment"
-        android:label="my"
-        tools:layout="@layout/my_fragment"/>
+        android:id="@+id/navigation_new"
+        android:name="com.example.dpf_client.ui.newthing.NewFragment"
+        android:label="the new"
+        tools:layout="@layout/new_fragment"/>
+
 </navigation>

@@ -15,9 +15,11 @@
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_notifications" />
+
     <item
-        android:id="@+id/test"
-        android:icon="@drawable/ic_rss_feed_black_24dp"
-        android:title="my"/>
+        android:id="@+id/navigation_new"
+        android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="新的" />
+
 
 </menu>

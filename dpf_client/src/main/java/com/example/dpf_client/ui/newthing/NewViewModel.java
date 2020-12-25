@@ -19,6 +19,7 @@ public class NewViewModel extends ViewModel {
     public LiveData<String> getText(){
         return mText;
     }
+
     public String getData(){
         now=new Date();
         return now.toString();

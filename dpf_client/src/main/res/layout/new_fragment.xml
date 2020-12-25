@@ -24,7 +24,17 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btn"
-        android:text="按钮"/>
+        android:id="@+id/add_btn"
+        android:text="添加一条"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete_btn"
+        android:text="删除一条"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:id="@+id/record_recycle_view"/>
+
 
 </LinearLayout>

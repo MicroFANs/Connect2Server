@@ -8,14 +8,22 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.dpf_client.R;
+import com.example.dpf_client.Util.Record;
+import com.example.dpf_client.Util.RecordAdapter;
+
+import java.util.ArrayList;
 
 public class NewFragment extends Fragment {
 
@@ -24,6 +32,12 @@ public class NewFragment extends Fragment {
 //    public static NewFragment newInstance() {
 //        return new NewFragment();
 //    }
+
+    private RecyclerView mRecordRecyclerView;
+    //数据源,用list来存
+    private ArrayList<Record> recordsList=new ArrayList<>();
+    //适配器
+    private RecordAdapter mRecordRecyclerAdapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -38,7 +52,7 @@ public class NewFragment extends Fragment {
             }
         });
 
-        final Button button=root.findViewById(R.id.btn);
+        final Button button=root.findViewById(R.id.add_btn);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,6 +61,8 @@ public class NewFragment extends Fragment {
                 // Fragment里，其他的就写在Model里，甚至可以不用Model，直接在Fragment里写
             }
         });
+        initRecyclerView(root);
+        initData();
         return root;
     }
 
@@ -56,5 +72,42 @@ public class NewFragment extends Fragment {
 //        mViewModel = ViewModelProviders.of(this).get(NewViewModel.class);
 //        // TODO: Use the ViewModel
 //    }
+    //初始化RecyclerView
+    private void initRecyclerView(View view){
+        //获取RecyclerView
+        mRecordRecyclerView=view.findViewById(R.id.record_recycle_view);
+        //创建Adapter
+        mRecordRecyclerAdapter=new RecordAdapter(recordsList);
+        //给RecyclerView设置adapter
+        mRecordRecyclerView.setAdapter(mRecordRecyclerAdapter);
+        //设置layoutManager,可以设置显示效果，是线性布局、grid布局，还是瀑布流布局
+        //参数是：上下文、列表方向（横向还是纵向）、是否倒叙
+        mRecordRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        //设置item的分割线
+        mRecordRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
+
+        //RecyclerView中没有item的监听事件，需要自己在适配器中写一个监听事件的接口。参数根据自定义
+        mRecordRecyclerAdapter.setOnItemClickListener(new RecordAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(View view, Record data) {
+                //此处进行监听事件的业务处理
+                Toast.makeText(getActivity(),"我是item",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+
+    }
+    //这个逻辑可以放到对应的Model里，现在简单写在这里
+    private void initData(){
+        for (int j = 0; j <10 ; j++) {
+            Record record=new Record("User"+j,j+10);
+            recordsList.add(record);
+        }
+
+    }
+
+
 
 }

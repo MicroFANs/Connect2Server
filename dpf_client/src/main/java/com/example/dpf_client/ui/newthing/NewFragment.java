@@ -69,12 +69,6 @@ public class NewFragment extends Fragment {
         return root;
     }
 
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//        mViewModel = ViewModelProviders.of(this).get(NewViewModel.class);
-//        // TODO: Use the ViewModel
-//    }
     //初始化RecyclerView
     private void initRecyclerView(View view){
         //获取RecyclerView
@@ -99,13 +93,7 @@ public class NewFragment extends Fragment {
             }
         });
 
-
-
-
     }
-
-
-    //这个逻辑可以放到对应的Model里，现在简单写在这里
 
     //设置数据源
     private void initData(){

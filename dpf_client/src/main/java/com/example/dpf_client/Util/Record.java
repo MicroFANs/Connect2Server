@@ -1,20 +1,32 @@
 package com.example.dpf_client.Util;
 
 public class Record {
-    private String id;
+    private int key;
+    private String name;
     private int imgId;
+    private double value;
 
-    public Record(String id, int imgId) {
-        this.id = id;
+    public Record(int key, String name, int imgId, double value) {
+        this.key = key;
+        this.name = name;
         this.imgId = imgId;
+        this.value = value;
     }
 
-    public String getId() {
-        return id;
+    public int getKey() {
+        return key;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setKey(int key) {
+        this.key = key;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getImgId() {
@@ -24,4 +36,13 @@ public class Record {
     public void setImgId(int imgId) {
         this.imgId = imgId;
     }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
 }

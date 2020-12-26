@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,9 +21,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.dpf_client.R;
+import com.example.dpf_client.Util.ImageIdUtil;
 import com.example.dpf_client.Util.Record;
 import com.example.dpf_client.Util.RecordAdapter;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class NewFragment extends Fragment {
@@ -85,7 +88,8 @@ public class NewFragment extends Fragment {
         mRecordRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         //设置item的分割线
         mRecordRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
-
+        //设置item添加和删除的动画
+        mRecordRecyclerView.setItemAnimator(new DefaultItemAnimator());
         //RecyclerView中没有item的监听事件，需要自己在适配器中写一个监听事件的接口。参数根据自定义
         mRecordRecyclerAdapter.setOnItemClickListener(new RecordAdapter.OnItemClickListener() {
             @Override
@@ -99,10 +103,15 @@ public class NewFragment extends Fragment {
 
 
     }
+
+
     //这个逻辑可以放到对应的Model里，现在简单写在这里
+
+    //设置数据源
     private void initData(){
-        for (int j = 0; j <10 ; j++) {
-            Record record=new Record("User"+j,j+10);
+        for (int j = 0; j <4 ; j++) {
+            String name="icon"+(j+1);
+            Record record=new Record(j,name, ImageIdUtil.getImageByReflect(name),j-0.4);
             recordsList.add(record);
         }
 

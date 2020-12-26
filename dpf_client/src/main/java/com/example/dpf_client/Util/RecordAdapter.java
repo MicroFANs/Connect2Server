@@ -1,6 +1,5 @@
 package com.example.dpf_client.Util;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.dpf_client.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.myViewHolder> {
-    private ArrayList<Record> allRecords;
+    private ArrayList<Record> recordArrayList;
 
     public RecordAdapter(ArrayList<Record> allRecords) {
-        this.allRecords = allRecords;
+        this.recordArrayList = allRecords;
     }
 
     @NonNull
@@ -31,26 +29,33 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.myViewHold
         return holder;
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull RecordAdapter.myViewHolder holder, int position) {
-        Record record=allRecords.get(position);
-        holder.recordName.setText(record.getId());//设置文字
-        //holder.recordImage.setImageResource(record.getImgId());//设置图片
-
+        Record record= recordArrayList.get(position);
+        holder.recordImage.setImageResource(record.getImgId());//设置图片
+        holder.recordName.setText(record.getName());//设置Name
+        holder.recordKey.setText(String.valueOf(record.getKey()));//设置key
+        holder.recordValue.setText(String.valueOf(record.getValue()));//设置value
     }
 
     @Override
     public int getItemCount() {
-        return allRecords.size();
+        return recordArrayList.size();
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder{
         ImageView recordImage;
         TextView recordName;
+        TextView recordKey;
+        TextView recordValue;
+
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
             recordImage=itemView.findViewById(R.id.record_img);
+            recordKey =itemView.findViewById(R.id.record_key);
+            recordValue=itemView.findViewById(R.id.record_value);
             recordName=itemView.findViewById(R.id.record_name);
 
 
@@ -63,7 +68,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.myViewHold
                     //Toast.makeText(context,"点击了xxx",Toast.LENGTH_SHORT).show();
                     //此处回传点击监听事件
                     if(onItemClickListener!=null){
-                        onItemClickListener.OnItemClick(v, allRecords.get(getLayoutPosition()));
+                        onItemClickListener.OnItemClick(v, recordArrayList.get(getLayoutPosition()));
                     }
                 }
             });

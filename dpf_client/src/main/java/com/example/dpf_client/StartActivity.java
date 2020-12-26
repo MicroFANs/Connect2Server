@@ -6,6 +6,7 @@ import androidx.core.app.NotificationCompat;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -93,8 +94,10 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         String digits = "0123456789.";
         mIPAddressEt.setKeyListener(DigitsKeyListener.getInstance(digits)); //只能输入数字和.
 
-        //SharedPreferences读写记录
-        mReadSP = PreferenceManager.getDefaultSharedPreferences(this);
+        //初始化SharedPreferences读
+        mReadSP=getSharedPreferences("default", Context.MODE_PRIVATE);
+        //初始化写
+        mEditorSP=mReadSP.edit();
 
         //读取上次保存的IP地址，填写到EditText
         mIPAddress = mReadSP.getString("ipAddress", "");
@@ -146,7 +149,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 String content="您的ID为："+map.get("user_id")+"，上传通道为："+map.get("channel");
                 showNotification(title,content,R.drawable.connectsuccess);
                 //连接成功将IP地址保存到本地
-                mEditorSP=mReadSP.edit();
+
                 mEditorSP.putString("ipAddress",mIPAddress);
                 mEditorSP.apply();
 

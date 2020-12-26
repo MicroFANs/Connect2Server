@@ -1,6 +1,9 @@
 package com.example.dpf_client.Util;
 
-public class Record {
+import java.io.Serializable;
+
+//可以序列化，用来转为json用SharedPreferences保存
+public class Record implements Serializable {
     private int key;
     private String name;
     private int imgId;

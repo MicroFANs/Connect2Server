@@ -30,9 +30,13 @@ import com.example.dpf_client.Util.ImageIdUtil;
 import com.example.dpf_client.Util.Record;
 import com.example.dpf_client.Util.RecordAdapter;
 import com.example.dpf_client.Util.RecyclerViewDivider;
+import com.example.dpf_client.Util.Response;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
@@ -42,45 +46,54 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRecordRecyclerView;//RecyclerView
     private RecordAdapter mRecordRecyclerAdapter;//适配器
     private ArrayList<Record> recordsList=new ArrayList<>(); //数据源,用list来存放Record对象
-    private Button mUpDataBtn;
-    private Button mAddDataBtn;
 
+    private FloatingActionsMenu mFaMenu;
+    private FloatingActionButton mAddFaBtn;
+    private FloatingActionButton mUploadFaBtn;
 
-
-    private SharedPreferences mReadSP;//读取记录
-    private SharedPreferences.Editor mEditorSP; //保存记录
+//    private SharedPreferences mReadSP;//读取记录
+//    private SharedPreferences.Editor mEditorSP; //保存记录
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        //initSharedPreference();//要先初始化这个
         initData(); //初始化数据
         initView(root);//初始化控件
 
-
-        mUpDataBtn.setOnClickListener(new View.OnClickListener() {
+        mUploadFaBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getActivity(), UploadActivity.class);
+                intent.putExtra("recordsList", (Serializable) recordsList);
                 startActivity(intent);
+            }
+        });
+        mAddFaBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addRecord(homeViewModel.getSingleRecord());
             }
         });
 
         return root;
     }
 
-
+//    private void initSharedPreference(){
+//        //Sharedpreferences
+//        //getActivity()方法一定要放在onCreateView这个方法里才能生效，否则只能返回null，涉及到Fragment生命周期
+//        mReadSP=getActivity().getSharedPreferences("default",getActivity().MODE_PRIVATE); //初始化读
+//        mEditorSP=mReadSP.edit(); //初始化写
+//    }
     //初始化View
     private void initView(View view){
 
-        //Sharedpreferences
-        //getActivity()方法一定要放在onCreateView这个方法里才能生效，否则只能返回null，涉及到Fragment生命周期
-        mReadSP=getActivity().getSharedPreferences("default",getActivity().MODE_PRIVATE); //初始化读
-        mEditorSP=mReadSP.edit(); //初始化写
-
         //Button
-        mUpDataBtn=view.findViewById(R.id.home_btn_startUpload);
+        mFaMenu=view.findViewById(R.id.home_famenu);
+        mUploadFaBtn=view.findViewById(R.id.home_fabtn_upload);
+        mAddFaBtn=view.findViewById(R.id.home_fabtn_add);
 
         //RecyclerView
         mRecordRecyclerView=view.findViewById(R.id.home_rv_record);//获取RecyclerView
@@ -114,32 +127,38 @@ public class HomeFragment extends Fragment {
 //        MainActivity activity = (MainActivity) getActivity();
 //        recordsList=activity.getRecords();
         }
-
-
     }
-    //将数据记录ArrayList<Record>保存到Json
-    private void saveRecordList2Json(ArrayList<Record> list){
-        Gson gson=new Gson();
-        String json=gson.toJson(list);
-        Log.d(TAG, "saveRecordList: "+json);
-        mEditorSP.putString("recordListJson",json);
-        mEditorSP.apply();
+//    //将数据记录ArrayList<Record>保存到Json
+//    private void saveRecordList2Json(ArrayList<Record> list){
+//        Gson gson=new Gson();
+//        String json=gson.toJson(list);
+//        Log.d(TAG, "saveRecordList: "+json);
+//        mEditorSP.putString("recordListJson",json);
+//        mEditorSP.apply();
+//    }
+
+//    //将Json还原为ArrayList<Record>
+//    private ArrayList<Record> loadRecordListFromJson(){
+//        ArrayList<Record> list=new ArrayList<>();
+//        String json=mReadSP.getString("recordListJson",null);
+//        if(json!=null){
+//            Gson gson=new Gson();
+//            list=gson.fromJson(json,new TypeToken<ArrayList<Record>>(){}.getType());//从Json转换为List
+//        }
+//        return list;
+//    }
+
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        saveRecordList2Json(recordsList);//保存到本地
+//    }
+
+    private void addRecord(Record record){
+        recordsList.add(0,record);//每次都添加在第0行
+        mRecordRecyclerAdapter.notifyItemInserted(0);
+        mRecordRecyclerAdapter.notifyItemRangeChanged(0, recordsList.size());
+        mRecordRecyclerView.scrollToPosition(0);//刷新显示第0行
     }
 
-    //将Json还原为ArrayList<Record>
-    private ArrayList<Record> loadRecordListFromJson(){
-        ArrayList<Record> list=new ArrayList<>();
-        String json=mReadSP.getString("recordListJson",null);
-        if(json!=null){
-            Gson gson=new Gson();
-            list=gson.fromJson(json,new TypeToken<ArrayList<Record>>(){}.getType());//从Json转换为List
-        }
-        return list;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        saveRecordList2Json(recordsList);//保存到本地
-    }
 }

@@ -13,5 +13,11 @@ public class GsonUtil {
         return map;
     }
 
+    public static String map2json(HashMap map){
+        Gson gson=new Gson();
+        String json=gson.toJson(map);
+        return json;
+    }
+
 
 }

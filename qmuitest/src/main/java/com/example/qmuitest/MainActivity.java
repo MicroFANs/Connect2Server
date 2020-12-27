@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button mButton2;
     Button mButton3;
     CircularProgressButton cp;
+    ProgressBar bar;
+    Button add;
 
 
 
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mButton1=findViewById(R.id.btn);
         mButton2=findViewById(R.id.qm_btn);
         mButton3=findViewById(R.id.qm_btn_1);
+        add=findViewById(R.id.add);
+        bar=findViewById(R.id.progress);
         cp=(CircularProgressButton) findViewById(R.id.processbtn);
         cp.setText("链接");
 
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mButton1.setOnClickListener(this);
         mButton2.setOnClickListener(this);
         mButton3.setOnClickListener(this);
+        add.setOnClickListener(this);
 
         cp.setIndeterminateProgressMode(true);
 
@@ -123,6 +129,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         })
                         .show();
+                break;
+            case R.id.add:
+
+                break;
 
         }
     }

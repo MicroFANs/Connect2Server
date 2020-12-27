@@ -13,8 +13,13 @@
 <!--        <item name="colorAccent">@color/green</item>-->
             <item name="colorPrimary">@color/cpb_green</item>
             <item name="colorPrimaryDark">@color/cpb_green_dark</item>
-            <item name="colorAccent">@color/green</item>
+            <item name="colorAccent">@color/cpb_green</item>
             <item name="titleTextColor">@color/white</item>
+
+</style>
+    <style name="fab_labels_style">
+        <item name="android:background">@drawable/fab_label_background</item> //文字背景的样式
+        <item name="android:textColor">@color/white</item> //文字的颜色
     </style>
 
 </resources>

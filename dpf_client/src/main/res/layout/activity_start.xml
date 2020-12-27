@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,9 +11,10 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="376dp"
+        android:layout_height="match_parent"
         android:layout_margin="10dp"
-        android:background="@drawable/map" />
+        android:background="@drawable/map"
+        android:layout_above="@id/start_et_address"/>
 
     <scut.carson_ho.diy_view.SuperEditText
         android:id="@+id/start_et_address"
@@ -44,8 +45,7 @@
         app:lineColor_click="@color/blue_pressed"
         app:lineColor_unclick="@color/blue_normal"
         app:linePosition="1"
-
-    />
+        android:layout_above="@id/start_btn_progress" />
 
     <com.dd.CircularProgressButton
         android:id="@+id/start_btn_progress"
@@ -54,9 +54,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:textColor="#ffffff"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="20dp"/>
 
-
-
-
-</LinearLayout>
+</RelativeLayout>

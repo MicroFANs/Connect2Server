@@ -142,15 +142,17 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 mConnectBtn.setProgress(100);
-
                 //解析json,这里是将json解析进String的Hashmap里，也可以定义一个实体类，直接解析成相应的对象
                 HashMap<String,String> map= GsonUtil.json2Map(response.body().string());
                 String title="服务器连接成功！";
-                String content="您的ID为："+map.get("user_id")+"，上传通道为："+map.get("channel");
+                String content="您的ID为："+map.get("user_id")+"，上传通道为："+map.get("channel")+"，隐私预算为："+map.get("epsilon");
                 showNotification(title,content,R.drawable.connectsuccess);
                 //连接成功将IP地址保存到本地
 
                 mEditorSP.putString("ipAddress",mIPAddress);
+                mEditorSP.putString("epsilon", map.get("epsilon"));//保存隐私预算
+                mEditorSP.putString("seed", map.get("user_id"));//保存用户id作为哈希种子
+                mEditorSP.putString("channel", map.get("channel"));//保存用户上传信道
                 mEditorSP.apply();
 
                 //成功登录，跳转页面
@@ -170,7 +172,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         if(Build.VERSION.SDK_INT<android.os.Build.VERSION_CODES.O){
             notification=new NotificationCompat.Builder(this)
                     .setContentTitle(title)
-                    .setContentText(content)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(icon)
                     .setShowWhen(true)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -186,7 +188,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             mManager.createNotificationChannel(channel);
             notification=new NotificationCompat.Builder(this, channelID)
                     .setContentTitle(title)
-                    .setContentText(content)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(icon)
                     .setShowWhen(true)
                     .build();

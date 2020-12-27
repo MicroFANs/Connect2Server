@@ -16,6 +16,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="开始上传"
         android:id="@+id/go"/>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

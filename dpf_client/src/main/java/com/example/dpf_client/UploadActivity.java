@@ -24,6 +24,7 @@ import com.example.dpf_client.Util.RecyclerViewDivider;
 import com.example.dpf_client.Util.Response;
 import com.example.dpf_client.Util.ResponseAdapter;
 import com.example.dpf_client.Util.TimeUtil;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.gson.JsonObject;
 import com.qmuiteam.qmui.widget.section.QMUIStickySectionLayout;
 
@@ -64,13 +65,14 @@ public class UploadActivity extends AppCompatActivity {
     private SharedPreferences mReadSP; //读取记录
     private SharedPreferences.Editor mEditorSP; //保存记录
 
+    private FloatingActionButton mStartFaBtn;//开始上传
+
     private List<String> pointTitle; //节点文字
     private Set<Integer> progressIndex; //执行节点的编号
     private ArrayList<Record> recordArrayList = new ArrayList<>(); //用户拥有的项集
     private ArrayList<Response> responseArrayList = new ArrayList<>(); //操作步骤记录
     private String[] mCandidateSet; //候选项集的key
     private String[] mEstimateData;//估计结果
-    private Button button;
     private int mPadLength; //填充项长度
     private double mEpsilon;//隐私预算
     private int hashDomain;//哈希域，就是g
@@ -88,27 +90,18 @@ public class UploadActivity extends AppCompatActivity {
         recordArrayList = (ArrayList<Record>) intent.getSerializableExtra("recordsList");
 
         initView();
-        button.setOnClickListener(new View.OnClickListener() {
+
+
+        mStartFaBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                i++;
-//                if(i<pointTitle.size()){
-//                progressIndex.add(i);
-//                pointProcessBar.refreshSelectedIndexSet(progressIndex);
-//                }
-//                else {
-//                    progressIndex.clear();
-//                    i=0;
-//                    progressIndex.add(i);
-//                    pointProcessBar.refreshSelectedIndexSet(progressIndex);
-//                }
                 sampleOne_upload(mOkClient, ROUTE_UP1);
             }
         });
     }
 
     private void initView() {
-        pointProcessBar = findViewById(R.id.progress);
+        pointProcessBar = findViewById(R.id.upload_pointProgress);
         pointTitle = new ArrayList<>();
         pointTitle.add("Step1");
         pointTitle.add("Step2");
@@ -120,7 +113,7 @@ public class UploadActivity extends AppCompatActivity {
         progressIndex.add(0);
         pointProcessBar.show(pointTitle, progressIndex);
 
-        button = findViewById(R.id.go);
+        mStartFaBtn=findViewById(R.id.upload_fabtn_start);
 
         mReadSP = getSharedPreferences("default", Context.MODE_PRIVATE);//初始化SharedPreferences读
         mEditorSP = mReadSP.edit();//初始化写

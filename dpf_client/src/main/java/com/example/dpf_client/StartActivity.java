@@ -81,10 +81,10 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     private void initView() {
         // ProgressButton; -1:ERROR; 0:Idle; 100:SUCCESS
         mConnectBtn = findViewById(R.id.start_btn_progress);
-        mConnectBtn.setText("CONNECT");
-        mConnectBtn.setCompleteText("SUCCESS");
-        mConnectBtn.setErrorText("ERROR");
-        mConnectBtn.setIdleText("CONNECT");
+        mConnectBtn.setText("连接服务器");
+        mConnectBtn.setCompleteText("连接成功");
+        mConnectBtn.setErrorText("连接失败");
+        mConnectBtn.setIdleText("连接服务器");
         mConnectBtn.setIndeterminateProgressMode(true);
         mConnectBtn.setOnClickListener(this);
 

@@ -8,45 +8,45 @@
     tools:context=".ui.home.HomeFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/home_rv_record"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/home_rv_record"
-        android:background="#EFEFEF"
-        android:layout_above="@id/navigationBar"/>
+        android:layout_above="@id/navigationBar"
+        android:background="#EFEFEF"/>
 
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/home_famenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/navigationBar"
         android:layout_alignParentRight="true"
-        app:fab_labelStyle="@style/fab_labels_style"
         app:fab_addButtonColorNormal="@color/cpb_green"
         app:fab_addButtonColorPressed="@color/cpb_green_dark"
-        android:id="@+id/home_famenu">
+        app:fab_labelStyle="@style/fab_labels_style">
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/home_fabtn_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/home_fabtn_add"
+            app:fab_icon="@drawable/ic_add_black_24dp"
             app:fab_size="mini"
             app:fab_title="添加数据"
-            app:fab_icon="@drawable/ic_add_black_24dp"
             />
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/home_fabtn_upload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/home_fabtn_upload"
-            app:fab_size="mini"
             app:fab_icon="@drawable/ic_cloud_upload_black_24dp"
+            app:fab_size="mini"
             app:fab_title="数据采集"
             />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/navigationBar"/>
+        android:layout_alignParentBottom="true"/>
 
 
 </RelativeLayout>

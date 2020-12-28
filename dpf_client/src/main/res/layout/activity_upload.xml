@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         app:fab_addButtonColorNormal="@color/cpb_green"
         app:fab_addButtonColorPressed="@color/cpb_green_dark"
         app:fab_labelStyle="@style/fab_labels_style">
@@ -48,12 +48,19 @@
             app:fab_size="mini"
             app:fab_title="查看结果" />
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/upload_fabtn_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_clear_all_black_24dp"
+            app:fab_size="mini"
+            app:fab_title="清除记录" />
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/upload_fabtn_start"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/ic_import_export_black_24dp"
             app:fab_size="mini"
-            app:fab_title="开始上传" />
+            app:fab_title="开始采集" />
 
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

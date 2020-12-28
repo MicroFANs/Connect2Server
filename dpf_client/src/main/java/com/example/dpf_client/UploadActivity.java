@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.dpf_client.Gson.GsonUtil;
+import com.example.dpf_client.Util.ChartDialog;
 import com.example.dpf_client.Util.HttpUtil;
 import com.example.dpf_client.Util.OLH;
 import com.example.dpf_client.Util.PointProcessBar;
@@ -66,6 +67,10 @@ public class UploadActivity extends AppCompatActivity {
     private SharedPreferences.Editor mEditorSP; //保存记录
 
     private FloatingActionButton mStartFaBtn;//开始上传
+    private FloatingActionButton mCleanFaBtn;//清除数据
+    private FloatingActionButton mChartFaBtn;//显示图表
+
+    private ChartDialog mChartDialog;//图表dialog
 
     private List<String> pointTitle; //节点文字
     private Set<Integer> progressIndex; //执行节点的编号
@@ -91,11 +96,22 @@ public class UploadActivity extends AppCompatActivity {
 
         initView();
 
-
         mStartFaBtn.setOnClickListener(new View.OnClickListener() {
             @Override
+            public void onClick(View v) { sampleOne_upload(mOkClient, ROUTE_UP1);
+            }
+        });
+        mCleanFaBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                sampleOne_upload(mOkClient, ROUTE_UP1);
+                removeResponse();
+            }
+        });
+        mChartFaBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChartDialog=new ChartDialog(UploadActivity.this);
+                mChartDialog.show();
             }
         });
     }
@@ -114,6 +130,10 @@ public class UploadActivity extends AppCompatActivity {
         pointProcessBar.show(pointTitle, progressIndex);
 
         mStartFaBtn=findViewById(R.id.upload_fabtn_start);
+        mCleanFaBtn=findViewById(R.id.upload_fabtn_clear);
+        mChartFaBtn=findViewById(R.id.upload_fabtn_result);
+
+        mChartDialog=new ChartDialog(this);//初始化Dialog
 
         mReadSP = getSharedPreferences("default", Context.MODE_PRIVATE);//初始化SharedPreferences读
         mEditorSP = mReadSP.edit();//初始化写
@@ -122,7 +142,7 @@ public class UploadActivity extends AppCompatActivity {
         mIPAddress = mReadSP.getString("ipAddress", "");//得到ip地址
         mSeed = mReadSP.getString("seed", "");//得到种子
 
-        responseArrayList = new ArrayList<>();
+        responseArrayList = new ArrayList<>();//上传记录的数据源
 
         //RecyclerView
         mResponseRecyclerView = findViewById(R.id.upload_rv_response);//获取RecyclerView
@@ -148,6 +168,19 @@ public class UploadActivity extends AppCompatActivity {
         mResponseAdapter.notifyItemInserted(0);
         mResponseAdapter.notifyItemRangeChanged(0, responseArrayList.size());
         mResponseRecyclerView.scrollToPosition(0);//刷新显示第0行
+    }
+
+    //删除项
+    private void removeResponse(){
+        responseArrayList.clear();
+        if (mResponseRecyclerView.getChildCount() > 0 ) {
+            mResponseRecyclerView.removeAllViews();
+            mResponseAdapter.notifyItemRangeChanged(0,responseArrayList.size());
+        }
+        progressIndex.clear();
+        progressIndex.add(0);
+        pointProcessBar.refreshSelectedIndexSet(progressIndex);
+
     }
 
     /* 阶段1 */

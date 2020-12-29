@@ -24,6 +24,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 
 import java.util.ArrayList;
@@ -54,9 +55,12 @@ public class BarChartDialog extends Dialog {
     private void setChart(){
 
         BarDataSet barDataSet=new BarDataSet(chartList,"频率估计值");
+        barDataSet.setColors(ColorTemplate.VORDIPLOM_COLORS);
         BarData barData=new BarData(barDataSet);
-        barData.setValueTextSize(12);
+        barData.setValueTextSize(10);
         mBarChart.setData(barData);//设置数据源
+
+
         mBarChart.setDragEnabled(true);
         mBarChart.setContentDescription("频率估计值");
         mBarChart.setPinchZoom(true);//缩放

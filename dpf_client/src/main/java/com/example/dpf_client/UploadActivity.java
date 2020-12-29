@@ -10,18 +10,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Display;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.dpf_client.Gson.GsonUtil;
-import com.example.dpf_client.Util.ChartDialog;
+import com.example.dpf_client.Util.BarChartDialog;
 import com.example.dpf_client.Util.HttpUtil;
 import com.example.dpf_client.Util.OLH;
 import com.example.dpf_client.Util.PointProcessBar;
 import com.example.dpf_client.Util.Record;
-import com.example.dpf_client.Util.RecordAdapter;
 import com.example.dpf_client.Util.RecyclerViewDivider;
 import com.example.dpf_client.Util.Response;
 import com.example.dpf_client.Util.ResponseAdapter;
@@ -32,18 +32,18 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.google.gson.JsonObject;
-import com.qmuiteam.qmui.widget.section.QMUIStickySectionLayout;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -65,6 +65,7 @@ public class UploadActivity extends AppCompatActivity {
 
 
     private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
+    private final Gson gson=new Gson();
 
     private PointProcessBar pointProcessBar;//节点进度条
     private RecyclerView mResponseRecyclerView; //RecyclerView
@@ -77,15 +78,14 @@ public class UploadActivity extends AppCompatActivity {
     private FloatingActionButton mCleanFaBtn;//清除数据
     private FloatingActionButton mChartFaBtn;//显示图表
 
-    private ChartDialog mChartDialog;//图表dialog
-    private BarChart mBarChart;//条形图
-    private Dialog dialog;
+    private BarChartDialog mBarChartDialog;//图表dialog
 
     private List<String> pointTitle; //节点文字
     private Set<Integer> progressIndex; //执行节点的编号
     private ArrayList<Record> recordArrayList = new ArrayList<>(); //用户拥有的项集
     private ArrayList<Response> responseArrayList = new ArrayList<>(); //操作步骤记录
     private List<BarEntry> chartList=new ArrayList<>();//图表数据
+    private ArrayList<String> label=new ArrayList<>();//label数据标签
     private String[] mCandidateSet; //候选项集的key
     private String[] mEstimateData;//估计结果
     private int mPadLength; //填充项长度
@@ -120,10 +120,22 @@ public class UploadActivity extends AppCompatActivity {
         mChartFaBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mChartDialog=new ChartDialog(UploadActivity.this);
-                mChartDialog.setCancelable(true);
-                mChartDialog.show();
+                if(chartList.size()==0){
+                    Toast.makeText(UploadActivity.this, "数据为空，请先上传记录", Toast.LENGTH_SHORT).show();
+                }else {
+                    mBarChartDialog = new BarChartDialog(UploadActivity.this, chartList,label);
+                    mBarChartDialog.setCancelable(true);
+                    mBarChartDialog.show();
 
+                    //设置dialog的大小
+                    Window dialogWindow = mBarChartDialog.getWindow();
+                    WindowManager m = getWindowManager();
+                    Display d = m.getDefaultDisplay();
+                    WindowManager.LayoutParams p = dialogWindow.getAttributes();
+                    p.height = (int) (d.getHeight() * 0.8);
+                    p.width = (int) (d.getWidth() * 1);
+                    dialogWindow.setAttributes(p);
+                }
             }
         });
     }
@@ -145,17 +157,19 @@ public class UploadActivity extends AppCompatActivity {
         mCleanFaBtn=findViewById(R.id.upload_fabtn_clear);
         mChartFaBtn=findViewById(R.id.upload_fabtn_result);
 
-        mChartDialog=new ChartDialog(this);//初始化Dialog
-        mBarChart=findViewById(R.id.bar_chart);
-
         mReadSP = getSharedPreferences("default", Context.MODE_PRIVATE);//初始化SharedPreferences读
         mEditorSP = mReadSP.edit();//初始化写
         mEpsilon = Double.parseDouble(mReadSP.getString("epsilon", "1"));//得到服务器的epsilon
         hashDomain = OLH.hashDomain(mEpsilon); //接着计算g
         mIPAddress = mReadSP.getString("ipAddress", "");//得到ip地址
         mSeed = mReadSP.getString("seed", "");//得到种子
-
-        responseArrayList = new ArrayList<>();//上传记录的数据源
+        //得到之前的采集记录
+        String responseArrayListJson= mReadSP.getString("responseArrayList","");
+        if(responseArrayListJson.isEmpty()){
+            responseArrayList=new ArrayList<>();
+        }else {
+            responseArrayList=gson.fromJson(responseArrayListJson, new TypeToken<List<Response>>(){}.getType());
+        }
 
         //RecyclerView
         mResponseRecyclerView = findViewById(R.id.upload_rv_response);//获取RecyclerView
@@ -221,14 +235,7 @@ public class UploadActivity extends AppCompatActivity {
         map.put("perturbed_key", perturbed_key);//扰动结果转为Sting类型
         map.put("seed", mSeed);//哈希种子
         String json = GsonUtil.map2json(map); //获得json
-//        //同时还要上传自己的hash的seed，聚合会用到
-//        JsonObject msgObj = new JsonObject();
-////        msgObj.add("perturbed_key",perturbed_key);
-////        msgObj.add("seed",mSeed);
-//        msgObj.addProperty("perturbed_key",perturbed_key);
-//        msgObj.addProperty("seed",mSeed);
-//        String json= msgObj.toString();
-
+        //同时还要上传自己的hash的seed，聚合会用到
         FormBody.Builder formBuilder = new FormBody.Builder();
         formBuilder.add("OneSample", json);
         FormBody body = formBuilder.build(); //封装
@@ -261,6 +268,7 @@ public class UploadActivity extends AppCompatActivity {
                         mCandidateSet = new String[candidate.size()];
                         for (int j = 0; j < candidate.size(); j++) {
                             mCandidateSet[j] = candidate.get("" + (j + 1));
+                            label.add(candidate.get("" + (j + 1)));
                         }
                         addResponse(new Response("Step2：返回候选项集成功!", "候选项集为：\n" + Arrays.toString(mCandidateSet), TimeUtil.getTime()));//增加记录
                         //更新进度条
@@ -277,7 +285,6 @@ public class UploadActivity extends AppCompatActivity {
         String url = HEAD + mIPAddress + PORT + route;//生成url
         HttpUtil.sendOkHttpRequest(client, url, body, callback);//发送
     }
-
 
     /* 阶段2 */
     private ArrayList<Record> getIntersection(String[] candidate) {
@@ -341,8 +348,7 @@ public class UploadActivity extends AppCompatActivity {
     /*阶段3*/
     private String padSetAndSample(int length, ArrayList<Record> records) {
         //填充
-//        int l=mCandidateSet.length;
-//        mCandidateSet=Arrays.copyOf(mCandidateSet, l+length);
+
         Random r = new Random();
         for (int i = 0; i < length; i++) {
             records.add(new Record(5080 + (i + 1), null, 0, r.nextInt(11)));
@@ -388,6 +394,7 @@ public class UploadActivity extends AppCompatActivity {
                         mEstimateData=new String[estimateData.size()];
                         for (int j = 0; j < estimateData.size(); j++) {
                             mEstimateData[j] = estimateData.get("" + (j + 1));
+                            chartList.add(new BarEntry(j+1, Float.valueOf(estimateData.get("" + (j + 1)))));
                         }
                         addResponse(new Response("Step6：返回候选项集成功!", "topk估计值为：\n" + Arrays.toString(mEstimateData), TimeUtil.getTime()));//增加记录
                         //更新进度条
@@ -403,18 +410,15 @@ public class UploadActivity extends AppCompatActivity {
         HttpUtil.sendOkHttpRequest(client, url, body, callback);//发送
     }
 
-    private void setChart(){
-        chartList.add(new BarEntry(1,11));
-        chartList.add(new BarEntry(2,12));
-        chartList.add(new BarEntry(3,2));
+    @Override
+    protected void onDestroy() {
+        //保存自定义对象ArrayList到SharedPreferences的方法
+        String responseJson=gson.toJson(responseArrayList);
+        mEditorSP.putString("responseArrayList",responseJson);
+        mEditorSP.commit();
+        super.onDestroy();
 
-        BarDataSet barDataSet=new BarDataSet(chartList,"估计值");
-        BarData barData=new BarData(barDataSet);
-        mBarChart.setData(barData);
 
-        mBarChart.getDescription().setEnabled(false);//隐藏右下角英文
-        mBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);//X轴的位置 默认为上面
-        mBarChart.getAxisRight().setEnabled(false);//隐藏右侧Y轴   默认是左右两侧都有Y轴
 
     }
 }

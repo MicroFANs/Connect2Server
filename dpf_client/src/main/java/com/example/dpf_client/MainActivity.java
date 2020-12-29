@@ -31,15 +31,4 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
     }
 
-
-    //设置在页面上显示的数据源,这里是在activity中的方法，被Fragment调用的例子
-    public ArrayList<Record> getRecords(){
-        ArrayList<Record> recordsList=new ArrayList<>();
-        for (int j = 0; j <16 ; j++) {
-            String name="icon"+(j+1)%4;
-            Record record=new Record(j,name, ImageIdUtil.getImageByReflect(name),j-0.4);
-            recordsList.add(record);
-        }
-        return recordsList;
-    }
 }

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,11 @@ import com.example.dpf_client.Util.Response;
 import com.example.dpf_client.Util.ResponseAdapter;
 import com.example.dpf_client.Util.TimeUtil;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.google.gson.JsonObject;
 import com.qmuiteam.qmui.widget.section.QMUIStickySectionLayout;
 
@@ -37,6 +43,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -71,11 +78,14 @@ public class UploadActivity extends AppCompatActivity {
     private FloatingActionButton mChartFaBtn;//显示图表
 
     private ChartDialog mChartDialog;//图表dialog
+    private BarChart mBarChart;//条形图
+    private Dialog dialog;
 
     private List<String> pointTitle; //节点文字
     private Set<Integer> progressIndex; //执行节点的编号
     private ArrayList<Record> recordArrayList = new ArrayList<>(); //用户拥有的项集
     private ArrayList<Response> responseArrayList = new ArrayList<>(); //操作步骤记录
+    private List<BarEntry> chartList=new ArrayList<>();//图表数据
     private String[] mCandidateSet; //候选项集的key
     private String[] mEstimateData;//估计结果
     private int mPadLength; //填充项长度
@@ -111,7 +121,9 @@ public class UploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mChartDialog=new ChartDialog(UploadActivity.this);
+                mChartDialog.setCancelable(true);
                 mChartDialog.show();
+
             }
         });
     }
@@ -134,6 +146,7 @@ public class UploadActivity extends AppCompatActivity {
         mChartFaBtn=findViewById(R.id.upload_fabtn_result);
 
         mChartDialog=new ChartDialog(this);//初始化Dialog
+        mBarChart=findViewById(R.id.bar_chart);
 
         mReadSP = getSharedPreferences("default", Context.MODE_PRIVATE);//初始化SharedPreferences读
         mEditorSP = mReadSP.edit();//初始化写
@@ -388,5 +401,20 @@ public class UploadActivity extends AppCompatActivity {
         };
         String url = HEAD + mIPAddress + PORT + route;//生成url
         HttpUtil.sendOkHttpRequest(client, url, body, callback);//发送
+    }
+
+    private void setChart(){
+        chartList.add(new BarEntry(1,11));
+        chartList.add(new BarEntry(2,12));
+        chartList.add(new BarEntry(3,2));
+
+        BarDataSet barDataSet=new BarDataSet(chartList,"估计值");
+        BarData barData=new BarData(barDataSet);
+        mBarChart.setData(barData);
+
+        mBarChart.getDescription().setEnabled(false);//隐藏右下角英文
+        mBarChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);//X轴的位置 默认为上面
+        mBarChart.getAxisRight().setEnabled(false);//隐藏右侧Y轴   默认是左右两侧都有Y轴
+
     }
 }

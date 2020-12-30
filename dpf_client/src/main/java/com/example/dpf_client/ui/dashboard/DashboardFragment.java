@@ -1,7 +1,11 @@
 package com.example.dpf_client.ui.dashboard;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +16,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -23,6 +28,7 @@ import com.example.dpf_client.Util.HttpUtil;
 import com.example.dpf_client.Util.Location;
 import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -42,6 +48,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 public class DashboardFragment extends Fragment {
 
     private static final String HEAD = "http://"; //Url头
@@ -55,6 +63,10 @@ public class DashboardFragment extends Fragment {
     private ScatterChart mScatterChart;
     private int mLocationX;
     private int mLocationY;
+    private float relativeX;
+    private float relativeY;
+    private LimitLine xLimitLine;
+    private LimitLine yLimitLine;
     private int id;
     private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
     private String mIPAddress; //IP地址
@@ -87,11 +99,7 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mLocationBtn.setProgress(50);
-                AlertDialog.Builder dialog=new AlertDialog.Builder((MainActivity)getActivity());
-                dialog.setTitle("您的位置信息为：");
-                dialog.setMessage("X："+mLocationX+"，Y："+mLocationY);
-                dialog.setCancelable(true);
-                dialog.show();
+                showNotification("您的位置信息为：", "X："+mLocationX+"，Y："+mLocationY, R.drawable.connectsuccess);
 
                 String url = HEAD + mIPAddress + PORT + ROUTE_GET_LOCATION;//生成url
                 getLocation(mOkClient, url);
@@ -129,8 +137,11 @@ public class DashboardFragment extends Fragment {
         mLocationBtn.setIndeterminateProgressMode(true);
         mStartBtn.setProgress(0);
         mLocationBtn.setProgress(0);
-        mLocationX=142575;
-        mLocationY=517378;
+        mLocationX=371464;
+        mLocationY=328177;
+        relativeX=0.446f;
+        relativeY=0.636f;
+
         mIPAddress= mReadSP.getString("ipAddress", "");//得到ip地址
 
         initChartMap();//初始化散点图图表
@@ -143,7 +154,7 @@ public class DashboardFragment extends Fragment {
         mReadSP=getActivity().getSharedPreferences("default",getActivity().MODE_PRIVATE); //初始化读
         mEditorSP=mReadSP.edit(); //初始化写
     }
-    
+
 
     private void getLocation(OkHttpClient client, String url){
         Callback callback=new Callback() {
@@ -171,7 +182,13 @@ public class DashboardFragment extends Fragment {
                         mLocationBtn.setProgress(100);
                     }
                 });
-                upData();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        upData();
+                    }
+                });
+
                 //得到所有位置Location的ArrayList
                 Log.d("TTT", "onResponse: "+locations.get(1).getId()+","+locations.get(1).getX()+","+locations.get(1).getY());
             }
@@ -257,6 +274,14 @@ public class DashboardFragment extends Fragment {
     }
 
     private void upData() {
+        YAxis yl = mScatterChart.getAxisLeft();
+        XAxis xl = mScatterChart.getXAxis();
+        xLimitLine=new LimitLine(relativeX,"Location_X");
+        xLimitLine.setTextSize(10f);
+        yLimitLine=new LimitLine(relativeY,"Location_Y");
+        yLimitLine.setTextSize(10f);
+        xl.addLimitLine(xLimitLine);
+        yl.addLimitLine(yLimitLine);
         //创建一个数据集,并给它一个类型
         ScatterDataSet set0 = new ScatterDataSet(cluster0, "原始数据");
         set0.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
@@ -334,6 +359,38 @@ public class DashboardFragment extends Fragment {
         mScatterChart.setData(data);
         mScatterChart.notifyDataSetChanged();
         mScatterChart.invalidate();
+    }
+
+    public void showNotification(String title,String content,int icon){
+        NotificationManager mManager=(NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+        Notification notification=null;
+
+        //低于Android8.0
+        if(Build.VERSION.SDK_INT<android.os.Build.VERSION_CODES.O){
+            notification=new NotificationCompat.Builder(getActivity())
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setSmallIcon(icon)
+                    .setShowWhen(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build();
+        }
+        //高于android8.0要设置channel
+        else if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+            String channelID="channelID";
+            String channelName="channelName";
+            int importance=NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel=new NotificationChannel(channelID,channelName,importance);
+            assert mManager != null;
+            mManager.createNotificationChannel(channel);
+            notification=new NotificationCompat.Builder(getActivity(), channelID)
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setSmallIcon(icon)
+                    .setShowWhen(true)
+                    .build();
+        }
+        mManager.notify(1, notification);
     }
 
 }

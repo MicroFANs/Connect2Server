@@ -2,17 +2,13 @@ package com.example.dpf_client;
 
 import android.os.Bundle;
 
-import com.example.dpf_client.Util.ImageIdUtil;
-import com.example.dpf_client.Util.Record;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import java.util.ArrayList;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 

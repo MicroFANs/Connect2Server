@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_marginLeft="5dp"
     android:layout_marginRight="5dp"
+    android:orientation="horizontal"
     app:cardCornerRadius="3dp">
 
     <RelativeLayout
@@ -13,51 +13,51 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        >
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
+            android:id="@+id/title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/title">
+            android:layout_height="wrap_content">
+
             <ImageView
+                android:id="@+id/response_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_check_circle_black_24dp"
-                android:id="@+id/response_icon"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:src="@drawable/ic_check_circle_black_24dp" />
+
             <TextView
                 android:id="@+id/response_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:text="Title"
-                android:textSize="18sp"
-                android:layout_marginLeft="5dp"/>
+                android:textSize="18sp" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/response_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Content"
             android:layout_below="@id/title"
             android:layout_marginTop="10dp"
             android:layout_toLeftOf="@id/response_time"
-            android:textColor="@color/gray"/>
+            android:text="Content"
+            android:textColor="@color/gray" />
 
         <TextView
             android:id="@+id/response_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:gravity="right"
-            android:textColor="@color/gray_8f"
             android:layout_alignParentRight="true"
-            android:text="time" />
+            android:gravity="right"
+            android:text="time"
+            android:textColor="@color/gray_8f"
+            android:textSize="15sp" />
     </RelativeLayout>
-
 
 
 </androidx.cardview.widget.CardView>

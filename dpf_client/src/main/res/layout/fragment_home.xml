@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/navigationBar"
-        android:background="#EFEFEF"/>
+        android:background="#EFEFEF" />
 
 
     <com.getbase.floatingactionbutton.FloatingActionsMenu
@@ -24,29 +24,29 @@
         app:fab_addButtonColorNormal="@color/cpb_green"
         app:fab_addButtonColorPressed="@color/cpb_green_dark"
         app:fab_labelStyle="@style/fab_labels_style">
+
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/home_fabtn_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/ic_add_black_24dp"
             app:fab_size="mini"
-            app:fab_title="添加数据"
-            />
+            app:fab_title="添加数据" />
+
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/home_fabtn_upload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_icon="@drawable/ic_cloud_upload_black_24dp"
             app:fab_size="mini"
-            app:fab_title="数据采集"
-            />
+            app:fab_title="数据采集" />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true" />
 
 
 </RelativeLayout>

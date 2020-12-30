@@ -11,8 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -56,7 +54,7 @@ public class DashboardFragment extends Fragment {
     private static final String PORT = ":8888"; //端口
     private static final String ROUTE_GET_LOCATION = "/getLocation"; //route，对应flask里的route
     private static final String ROUTE_GET_CLUSTER = "/getCluster"; //route，对应flask里的route
-
+    private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
     private DashboardViewModel dashboardViewModel;
     private CircularProgressButton mStartBtn;
     private CircularProgressButton mLocationBtn;
@@ -68,23 +66,22 @@ public class DashboardFragment extends Fragment {
     private LimitLine xLimitLine;
     private LimitLine yLimitLine;
     private int id;
-    private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
     private String mIPAddress; //IP地址
 
     private SharedPreferences mReadSP;//读取记录
     private SharedPreferences.Editor mEditorSP; //保存记录
 
-    private ArrayList<Location> locations=new ArrayList<>();//所有点的list
+    private ArrayList<Location> locations = new ArrayList<>();//所有点的list
 
-    private ArrayList<Entry> chartMap=new ArrayList<>();
+    private ArrayList<Entry> chartMap = new ArrayList<>();
     private ArrayList<Entry> cluster0 = new ArrayList<Entry>();//原始数据
     private ArrayList<Entry> cluster1 = new ArrayList<Entry>();//簇1
     private ArrayList<Entry> cluster2 = new ArrayList<Entry>();//簇2
     private ArrayList<Entry> cluster3 = new ArrayList<Entry>();//簇3
     private ArrayList<Entry> cluster4 = new ArrayList<Entry>();//簇4
     private ArrayList<Entry> cluster5 = new ArrayList<Entry>();//簇5
-    private ArrayList<IScatterDataSet> dataSets=new ArrayList<>();//数据类型的list
-    private  ScatterData data;//数据源
+    private ArrayList<IScatterDataSet> dataSets = new ArrayList<>();//数据类型的list
+    private ScatterData data;//数据源
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -99,8 +96,12 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mLocationBtn.setProgress(50);
-                showNotification("您的位置信息为：", "X："+mLocationX+"，Y："+mLocationY, R.drawable.connectsuccess);
-
+                showNotification("您的位置信息为：", "X：" + mLocationX + "，Y：" + mLocationY, R.drawable.connectsuccess);
+                AlertDialog.Builder dialog = new AlertDialog.Builder((MainActivity) getActivity());
+                dialog.setTitle("您的位置信息为：");
+                dialog.setMessage("X：" + mLocationX + "，Y：" + mLocationY);
+                dialog.setCancelable(true);
+                dialog.show();
                 String url = HEAD + mIPAddress + PORT + ROUTE_GET_LOCATION;//生成url
                 getLocation(mOkClient, url);
                 mLocationBtn.setProgress(100);
@@ -120,11 +121,12 @@ public class DashboardFragment extends Fragment {
 
         return root;
     }
-    private void initView(View view){
 
-        mLocationBtn=view.findViewById(R.id.dashboard_btn_location);
-        mStartBtn =view.findViewById(R.id.dashboard_btn_start);
-        mScatterChart=view.findViewById(R.id.scatterChart);
+    private void initView(View view) {
+
+        mLocationBtn = view.findViewById(R.id.dashboard_btn_location);
+        mStartBtn = view.findViewById(R.id.dashboard_btn_start);
+        mScatterChart = view.findViewById(R.id.scatterChart);
         mStartBtn.setText("上传数据");
         mStartBtn.setCompleteText("上传成功");
         mStartBtn.setErrorText("上传失败");
@@ -137,27 +139,27 @@ public class DashboardFragment extends Fragment {
         mLocationBtn.setIndeterminateProgressMode(true);
         mStartBtn.setProgress(0);
         mLocationBtn.setProgress(0);
-        mLocationX=371464;
-        mLocationY=328177;
-        relativeX=0.446f;
-        relativeY=0.636f;
+        mLocationX = 371464;
+        mLocationY = 328177;
+        relativeX = 0.446f;
+        relativeY = 0.636f;
 
-        mIPAddress= mReadSP.getString("ipAddress", "");//得到ip地址
+        mIPAddress = mReadSP.getString("ipAddress", "");//得到ip地址
 
         initChartMap();//初始化散点图图表
 
     }
 
-    private void initSharedPreference(){
+    private void initSharedPreference() {
         //Sharedpreferences
         //getActivity()方法一定要放在onCreateView这个方法里才能生效，否则只能返回null，涉及到Fragment生命周期
-        mReadSP=getActivity().getSharedPreferences("default",getActivity().MODE_PRIVATE); //初始化读
-        mEditorSP=mReadSP.edit(); //初始化写
+        mReadSP = getActivity().getSharedPreferences("default", getActivity().MODE_PRIVATE); //初始化读
+        mEditorSP = mReadSP.edit(); //初始化写
     }
 
 
-    private void getLocation(OkHttpClient client, String url){
-        Callback callback=new Callback() {
+    private void getLocation(OkHttpClient client, String url) {
+        Callback callback = new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -165,16 +167,16 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                HashMap<String,String> map= GsonUtil.json2Map(response.body().string());
-                String jsonX=map.get("label_x");
-                String jsonY=map.get("label_y");
+                HashMap<String, String> map = GsonUtil.json2Map(response.body().string());
+                String jsonX = map.get("label_x");
+                String jsonY = map.get("label_y");
                 HashMap<String, String> label_x = GsonUtil.json2Map(jsonX);
-                HashMap<String,String> label_y=GsonUtil.json2Map(jsonY);
-                for (int i = 0; i <label_x.size() ; i++) {
-                    float x=Float.valueOf(label_x.get(""+(i+1)));
-                    float y=Float.valueOf(label_y.get(""+(i+1)));
-                    locations.add(new Location(i,x ,y , 0));
-                    cluster0.add((new Entry(x,y))); //加载所有原始数据
+                HashMap<String, String> label_y = GsonUtil.json2Map(jsonY);
+                for (int i = 0; i < label_x.size(); i++) {
+                    float x = Float.valueOf(label_x.get("" + (i + 1)));
+                    float y = Float.valueOf(label_y.get("" + (i + 1)));
+                    locations.add(new Location(i, x, y, 0));
+                    cluster0.add((new Entry(x, y))); //加载所有原始数据
                 }
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -190,14 +192,14 @@ public class DashboardFragment extends Fragment {
                 });
 
                 //得到所有位置Location的ArrayList
-                Log.d("TTT", "onResponse: "+locations.get(1).getId()+","+locations.get(1).getX()+","+locations.get(1).getY());
+                Log.d("TTT", "onResponse: " + locations.get(1).getId() + "," + locations.get(1).getX() + "," + locations.get(1).getY());
             }
         };
-        HttpUtil.sendOkHttpRequest(client,url,callback);
+        HttpUtil.sendOkHttpRequest(client, url, callback);
     }
 
-    private void getCluster(OkHttpClient client, String url){
-        Callback callback=new Callback() {
+    private void getCluster(OkHttpClient client, String url) {
+        Callback callback = new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -205,16 +207,16 @@ public class DashboardFragment extends Fragment {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                HashMap<String,String> map= GsonUtil.json2Map(response.body().string());
-                int iterate=map.size();
+                HashMap<String, String> map = GsonUtil.json2Map(response.body().string());
+                int iterate = map.size();
                 for (int i = 0; i < iterate; i++) {
-                    HashMap<String, String> temp = GsonUtil.json2Map(map.get(""+i));
+                    HashMap<String, String> temp = GsonUtil.json2Map(map.get("" + i));
                     for (int j = 0; j < temp.size(); j++) {
-                        Double d=Double.valueOf(temp.get(""+(j+1)));
-                        int flag=(int) Math.ceil(d);
-                        Location newLoc=locations.get(j);
+                        Double d = Double.valueOf(temp.get("" + (j + 1)));
+                        int flag = (int) Math.ceil(d);
+                        Location newLoc = locations.get(j);
                         newLoc.setFlag(flag);
-                        locations.set(j,newLoc);
+                        locations.set(j, newLoc);
                     }
                     try {
                         Thread.sleep(1000);
@@ -226,10 +228,10 @@ public class DashboardFragment extends Fragment {
                 }
             }
         };
-        HttpUtil.sendOkHttpRequest(client,url,callback);
+        HttpUtil.sendOkHttpRequest(client, url, callback);
     }
 
-    private void initChartMap(){
+    private void initChartMap() {
         chartMap.add(new Entry(0f, 0f));
         chartMap.add(new Entry(0f, 1f));
         chartMap.add(new Entry(1f, 0f));
@@ -267,7 +269,7 @@ public class DashboardFragment extends Fragment {
         set.setScatterShapeSize(8f);
 
         dataSets.add(set);
-        data=new ScatterData(dataSets);
+        data = new ScatterData(dataSets);
         mScatterChart.setData(data);
         mScatterChart.invalidate();
         mScatterChart.animateXY(1000, 1000);
@@ -276,9 +278,9 @@ public class DashboardFragment extends Fragment {
     private void upData() {
         YAxis yl = mScatterChart.getAxisLeft();
         XAxis xl = mScatterChart.getXAxis();
-        xLimitLine=new LimitLine(relativeX,"Location_X");
+        xLimitLine = new LimitLine(relativeX, "Location_X");
         xLimitLine.setTextSize(10f);
-        yLimitLine=new LimitLine(relativeY,"Location_Y");
+        yLimitLine = new LimitLine(relativeY, "Location_Y");
         yLimitLine.setTextSize(10f);
         xl.addLimitLine(xLimitLine);
         yl.addLimitLine(yLimitLine);
@@ -295,19 +297,20 @@ public class DashboardFragment extends Fragment {
         mScatterChart.invalidate();
     }
 
-    private void upClusterData(){
-        if(data.getDataSetCount()>2){
-        for (int i = 0; i < 5; i++) {
-            data.removeDataSet(data.getDataSetCount()-1);
+    private void upClusterData() {
+        if (data.getDataSetCount() > 2) {
+            for (int i = 0; i < 5; i++) {
+                data.removeDataSet(data.getDataSetCount() - 1);
+            }
+            cluster1.clear();
+            cluster2.clear();
+            cluster3.clear();
+            cluster4.clear();
+            cluster5.clear();
         }
-        cluster1.clear();
-        cluster2.clear();
-        cluster3.clear();
-        cluster4.clear();
-        cluster5.clear();}
 
-        for (Location loc:locations) {
-            Entry e=new Entry(loc.getX(), loc.getY());
+        for (Location loc : locations) {
+            Entry e = new Entry(loc.getX(), loc.getY());
             switch (loc.getFlag()) {
                 case 0:
                     cluster1.add(e);
@@ -361,13 +364,13 @@ public class DashboardFragment extends Fragment {
         mScatterChart.invalidate();
     }
 
-    public void showNotification(String title,String content,int icon){
-        NotificationManager mManager=(NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-        Notification notification=null;
+    public void showNotification(String title, String content, int icon) {
+        NotificationManager mManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = null;
 
         //低于Android8.0
-        if(Build.VERSION.SDK_INT<android.os.Build.VERSION_CODES.O){
-            notification=new NotificationCompat.Builder(getActivity())
+        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            notification = new NotificationCompat.Builder(getActivity())
                     .setContentTitle(title)
                     .setContentText(content)
                     .setSmallIcon(icon)
@@ -376,14 +379,14 @@ public class DashboardFragment extends Fragment {
                     .build();
         }
         //高于android8.0要设置channel
-        else if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
-            String channelID="channelID";
-            String channelName="channelName";
-            int importance=NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel=new NotificationChannel(channelID,channelName,importance);
+        else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String channelID = "channelID";
+            String channelName = "channelName";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(channelID, channelName, importance);
             assert mManager != null;
             mManager.createNotificationChannel(channel);
-            notification=new NotificationCompat.Builder(getActivity(), channelID)
+            notification = new NotificationCompat.Builder(getActivity(), channelID)
                     .setContentTitle(title)
                     .setContentText(content)
                     .setSmallIcon(icon)

@@ -1,11 +1,5 @@
 package com.example.dpf_client;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +9,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.dpf_client.Gson.GsonUtil;
 import com.example.dpf_client.Util.BarChartDialog;
@@ -27,10 +26,6 @@ import com.example.dpf_client.Util.Response;
 import com.example.dpf_client.Util.ResponseAdapter;
 import com.example.dpf_client.Util.TimeUtil;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -38,7 +33,6 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,7 +59,7 @@ public class UploadActivity extends AppCompatActivity {
 
 
     private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
-    private final Gson gson=new Gson();
+    private final Gson gson = new Gson();
 
     private PointProcessBar pointProcessBar;//节点进度条
     private RecyclerView mResponseRecyclerView; //RecyclerView
@@ -84,8 +78,8 @@ public class UploadActivity extends AppCompatActivity {
     private Set<Integer> progressIndex; //执行节点的编号
     private ArrayList<Record> recordArrayList = new ArrayList<>(); //用户拥有的项集
     private ArrayList<Response> responseArrayList = new ArrayList<>(); //操作步骤记录
-    private List<BarEntry> chartList=new ArrayList<>();//图表数据
-    private ArrayList<String> label=new ArrayList<>();//label数据标签
+    private List<BarEntry> chartList = new ArrayList<>();//图表数据
+    private ArrayList<String> label = new ArrayList<>();//label数据标签
     private String[] mCandidateSet; //候选项集的key
     private String[] mEstimateData;//估计结果
     private int mPadLength; //填充项长度
@@ -108,7 +102,8 @@ public class UploadActivity extends AppCompatActivity {
 
         mStartFaBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { sampleOne_upload(mOkClient, ROUTE_UP1);
+            public void onClick(View v) {
+                sampleOne_upload(mOkClient, ROUTE_UP1);
             }
         });
         mCleanFaBtn.setOnClickListener(new View.OnClickListener() {
@@ -120,10 +115,10 @@ public class UploadActivity extends AppCompatActivity {
         mChartFaBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(chartList.size()==0){
+                if (chartList.size() == 0) {
                     Toast.makeText(UploadActivity.this, "数据为空，请先上传记录", Toast.LENGTH_SHORT).show();
-                }else {
-                    mBarChartDialog = new BarChartDialog(UploadActivity.this, chartList,label);
+                } else {
+                    mBarChartDialog = new BarChartDialog(UploadActivity.this, chartList, label);
                     mBarChartDialog.setCancelable(true);
                     mBarChartDialog.show();
 
@@ -153,9 +148,9 @@ public class UploadActivity extends AppCompatActivity {
         progressIndex.add(0);
         pointProcessBar.show(pointTitle, progressIndex);
 
-        mStartFaBtn=findViewById(R.id.upload_fabtn_start);
-        mCleanFaBtn=findViewById(R.id.upload_fabtn_clear);
-        mChartFaBtn=findViewById(R.id.upload_fabtn_result);
+        mStartFaBtn = findViewById(R.id.upload_fabtn_start);
+        mCleanFaBtn = findViewById(R.id.upload_fabtn_clear);
+        mChartFaBtn = findViewById(R.id.upload_fabtn_result);
 
         mReadSP = getSharedPreferences("default", Context.MODE_PRIVATE);//初始化SharedPreferences读
         mEditorSP = mReadSP.edit();//初始化写
@@ -164,11 +159,12 @@ public class UploadActivity extends AppCompatActivity {
         mIPAddress = mReadSP.getString("ipAddress", "");//得到ip地址
         mSeed = mReadSP.getString("seed", "");//得到种子
         //得到之前的采集记录
-        String responseArrayListJson= mReadSP.getString("responseArrayList","");
-        if(responseArrayListJson.isEmpty()){
-            responseArrayList=new ArrayList<>();
-        }else {
-            responseArrayList=gson.fromJson(responseArrayListJson, new TypeToken<List<Response>>(){}.getType());
+        String responseArrayListJson = mReadSP.getString("responseArrayList", "");
+        if (responseArrayListJson.isEmpty()) {
+            responseArrayList = new ArrayList<>();
+        } else {
+            responseArrayList = gson.fromJson(responseArrayListJson, new TypeToken<List<Response>>() {
+            }.getType());
         }
 
         //RecyclerView
@@ -198,11 +194,11 @@ public class UploadActivity extends AppCompatActivity {
     }
 
     //删除项
-    private void removeResponse(){
+    private void removeResponse() {
         responseArrayList.clear();
-        if (mResponseRecyclerView.getChildCount() > 0 ) {
+        if (mResponseRecyclerView.getChildCount() > 0) {
             mResponseRecyclerView.removeAllViews();
-            mResponseAdapter.notifyItemRangeChanged(0,responseArrayList.size());
+            mResponseAdapter.notifyItemRangeChanged(0, responseArrayList.size());
         }
         progressIndex.clear();
         progressIndex.add(0);
@@ -391,10 +387,10 @@ public class UploadActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mEstimateData=new String[estimateData.size()];
+                        mEstimateData = new String[estimateData.size()];
                         for (int j = 0; j < estimateData.size(); j++) {
                             mEstimateData[j] = estimateData.get("" + (j + 1));
-                            chartList.add(new BarEntry(j+1, Float.valueOf(estimateData.get("" + (j + 1)))));
+                            chartList.add(new BarEntry(j + 1, Float.valueOf(estimateData.get("" + (j + 1)))));
                         }
                         addResponse(new Response("Step6：返回候选项集成功!", "topk估计值为：\n" + Arrays.toString(mEstimateData), TimeUtil.getTime()));//增加记录
                         //更新进度条
@@ -413,11 +409,10 @@ public class UploadActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         //保存自定义对象ArrayList到SharedPreferences的方法
-        String responseJson=gson.toJson(responseArrayList);
-        mEditorSP.putString("responseArrayList",responseJson);
+        String responseJson = gson.toJson(responseArrayList);
+        mEditorSP.putString("responseArrayList", responseJson);
         mEditorSP.commit();
         super.onDestroy();
-
 
 
     }

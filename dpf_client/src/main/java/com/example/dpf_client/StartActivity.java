@@ -1,8 +1,5 @@
 package com.example.dpf_client;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -11,15 +8,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.dd.CircularProgressButton;
 import com.example.dpf_client.Gson.GsonUtil;
@@ -44,16 +40,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     private static final String HEAD = "http://"; //Url头
     private static final String PORT = ":8888"; //端口
     private static final String ROUTE_CONNECT = "/connect"; //route，对应flask里的route
-
+    private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
     //控件
     private CircularProgressButton mConnectBtn; //ProgressButton
     private SuperEditText mIPAddressEt;
     private SharedPreferences mReadSP; //读取记录
     private SharedPreferences.Editor mEditorSP; //保存记录
-
-
-    private final OkHttpClient mOkClient = new OkHttpClient(); //单例，不用每次都创建新的Client
-
     //变量
     private String mIPAddress; //IP地址
     private String mIPInput; //输入框中的字符串
@@ -95,9 +87,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         mIPAddressEt.setKeyListener(DigitsKeyListener.getInstance(digits)); //只能输入数字和.
 
         //初始化SharedPreferences读
-        mReadSP=getSharedPreferences("default", Context.MODE_PRIVATE);
+        mReadSP = getSharedPreferences("default", Context.MODE_PRIVATE);
         //初始化写
-        mEditorSP=mReadSP.edit();
+        mEditorSP = mReadSP.edit();
 
         //读取上次保存的IP地址，填写到EditText
         mIPAddress = mReadSP.getString("ipAddress", "");
@@ -120,57 +112,57 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     mIPAddress = mIPInput;
                     mConnectBtn.setProgress(1);
                     Toast.makeText(this, mIPAddress, Toast.LENGTH_SHORT).show();
-                    String url=HEAD+mIPAddress+PORT+ROUTE_CONNECT;
-                    Connect2Server(mOkClient,url);
+                    String url = HEAD + mIPAddress + PORT + ROUTE_CONNECT;
+                    Connect2Server(mOkClient, url);
                 }
                 break;
         }
     }
 
     //连接服务器
-    public void Connect2Server(OkHttpClient client,String url) {
+    public void Connect2Server(OkHttpClient client, String url) {
         //回调函数
-        Callback callback=new Callback() {
+        Callback callback = new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 mConnectBtn.setProgress(-1);
-                String title="连接失败";
-                String content="请输入正确的IP地址";
-                showNotification(title,content,R.drawable.connectfail);
+                String title = "连接失败";
+                String content = "请输入正确的IP地址";
+                showNotification(title, content, R.drawable.connectfail);
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 mConnectBtn.setProgress(100);
                 //解析json,这里是将json解析进String的Hashmap里，也可以定义一个实体类，直接解析成相应的对象
-                HashMap<String,String> map= GsonUtil.json2Map(response.body().string());
-                String title="服务器连接成功！";
-                String content="您的ID为："+map.get("user_id")+"，上传通道为："+map.get("channel")+"，隐私预算为："+map.get("epsilon");
-                showNotification(title,content,R.drawable.connectsuccess);
+                HashMap<String, String> map = GsonUtil.json2Map(response.body().string());
+                String title = "服务器连接成功！";
+                String content = "您的ID为：" + map.get("user_id") + "，上传通道为：" + map.get("channel") + "，隐私预算为：" + map.get("epsilon");
+                showNotification(title, content, R.drawable.connectsuccess);
                 //连接成功将IP地址保存到本地
 
-                mEditorSP.putString("ipAddress",mIPAddress);
+                mEditorSP.putString("ipAddress", mIPAddress);
                 mEditorSP.putString("epsilon", map.get("epsilon"));//保存隐私预算
                 mEditorSP.putString("seed", map.get("user_id"));//保存用户id作为哈希种子
                 mEditorSP.putString("channel", map.get("channel"));//保存用户上传信道
                 mEditorSP.apply();
 
                 //成功登录，跳转页面
-                Intent intent=new Intent(StartActivity.this,MainActivity.class);
+                Intent intent = new Intent(StartActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         };
-        HttpUtil.sendOkHttpRequest(client,url,callback);
+        HttpUtil.sendOkHttpRequest(client, url, callback);
     }
 
     //构建通知
-    public void showNotification(String title,String content,int icon){
-        NotificationManager mManager=(NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Notification notification=null;
+    public void showNotification(String title, String content, int icon) {
+        NotificationManager mManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = null;
 
         //低于Android8.0
-        if(Build.VERSION.SDK_INT<android.os.Build.VERSION_CODES.O){
-            notification=new NotificationCompat.Builder(this)
+        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+            notification = new NotificationCompat.Builder(this)
                     .setContentTitle(title)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(icon)
@@ -179,14 +171,14 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                     .build();
         }
         //高于android8.0要设置channel
-        else if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
-            String channelID="channelID";
-            String channelName="channelName";
-            int importance=NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel=new NotificationChannel(channelID,channelName,importance);
+        else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String channelID = "channelID";
+            String channelName = "channelName";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(channelID, channelName, importance);
             assert mManager != null;
             mManager.createNotificationChannel(channel);
-            notification=new NotificationCompat.Builder(this, channelID)
+            notification = new NotificationCompat.Builder(this, channelID)
                     .setContentTitle(title)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(icon)

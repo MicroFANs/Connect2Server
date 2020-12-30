@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,51 +11,51 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/start_et_address"
         android:layout_margin="10dp"
-        android:background="@drawable/map"
-        android:layout_above="@id/start_et_address"/>
+        android:background="@drawable/map" />
 
     <scut.carson_ho.diy_view.SuperEditText
         android:id="@+id/start_et_address"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_above="@id/start_btn_progress"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:textSize="20sp"
         android:hint="输入IP地址"
         android:inputType="textPostalAddress"
 
-        app:ic_left_click="@drawable/ic_rss_feed_black_24dp"
-        app:ic_left_unclick="@drawable/ic_rss_feed_black_24dp_click"
-        app:left_x="0"
-        app:left_y="0"
-        app:left_width="60"
-        app:left_height="60"
-
-        app:ic_delete="@drawable/delete"
+        android:textSize="20sp"
+        app:delete_height="60"
+        app:delete_width="60"
         app:delete_x="0"
         app:delete_y="0"
-        app:delete_width="60"
-        app:delete_height="60"
+        app:ic_delete="@drawable/delete"
 
+        app:ic_left_click="@drawable/ic_rss_feed_black_24dp"
+        app:ic_left_unclick="@drawable/ic_rss_feed_black_24dp_click"
+        app:left_height="60"
+        app:left_width="60"
+        app:left_x="0"
+
+        app:left_y="0"
         app:lineColor_click="@color/blue_pressed"
         app:lineColor_unclick="@color/blue_normal"
-        app:linePosition="1"
-        android:layout_above="@id/start_btn_progress" />
+        app:linePosition="1" />
 
     <com.dd.CircularProgressButton
         android:id="@+id/start_btn_progress"
-        android:layout_gravity="center"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textColor="#ffffff"
-        android:textSize="18sp"
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:layout_marginBottom="20dp"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
 
 </RelativeLayout>

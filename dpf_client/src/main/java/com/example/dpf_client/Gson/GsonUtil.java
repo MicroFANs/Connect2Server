@@ -7,15 +7,16 @@ import java.util.HashMap;
 
 public class GsonUtil {
 
-    public static HashMap<String,String> json2Map(String json){
-        Gson gson=new Gson();
-        HashMap<String, String> map= gson.fromJson(json,new TypeToken<HashMap<String,String>>(){}.getType());
+    public static HashMap<String, String> json2Map(String json) {
+        Gson gson = new Gson();
+        HashMap<String, String> map = gson.fromJson(json, new TypeToken<HashMap<String, String>>() {
+        }.getType());
         return map;
     }
 
-    public static String map2json(HashMap map){
-        Gson gson=new Gson();
-        String json=gson.toJson(map);
+    public static String map2json(HashMap map) {
+        Gson gson = new Gson();
+        String json = gson.toJson(map);
         return json;
     }
 
